@@ -17,7 +17,9 @@ package com.example.android.sunshine.data;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -34,21 +36,33 @@ import android.support.annotation.NonNull;
  */
 public class WeatherProvider extends ContentProvider {
 
-//  TODO (5) Create static constant integer values named CODE_WEATHER & CODE_WEATHER_WITH_DATE to identify the URIs this ContentProvider can handle
+//  DONE (5) Create static constant integer values named CODE_WEATHER & CODE_WEATHER_WITH_DATE to identify the URIs this ContentProvider can handle
+    static final int CODE_WEATHER = 100;
+    static final int CODE_WEATHER_WITH_DATE = 101;
 
-//  TODO (7) Instantiate a static UriMatcher using the buildUriMatcher method
+//  DONE (7) Instantiate a static UriMatcher using the buildUriMatcher method
 
+    private static final UriMatcher uriMatcher = buildUriMatcher();
     WeatherDbHelper mOpenHelper;
 
-//  TODO (6) Write a method called buildUriMatcher where you match URI's to their numeric ID
+//  DONE (6) Write a method called buildUriMatcher where you match URI's to their numeric ID
+    public static UriMatcher buildUriMatcher() {
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final String authority = WeatherContract.CONTENT_AUTHORITY;
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER, CODE_WEATHER);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/#", CODE_WEATHER_WITH_DATE);
+        return matcher;
+    }
 
-//  TODO (1) Implement onCreate
+//  DONE (1) Implement onCreate
     @Override
     public boolean onCreate() {
-//      TODO (2) Within onCreate, instantiate our mOpenHelper
+//      DONE (2) Within onCreate, instantiate our mOpenHelper
 
-//      TODO (3) Return true from onCreate to signify success performing setup
-        return false;
+//      DONE (3) Return true from onCreate to signify success performing setup
+        mOpenHelper = new WeatherDbHelper(getContext());
+
+        return true;
     }
 
     /**
@@ -69,7 +83,7 @@ public class WeatherProvider extends ContentProvider {
         throw new RuntimeException("Student, you need to implement the bulkInsert mehtod!");
     }
 
-//  TODO (8) Provide an implementation for the query method
+//  DONE (8) Provide an implementation for the query method
     /**
      * Handles query requests from clients. We will use this method in Sunshine to query for all
      * of our weather data as well as to query for the weather on a particular day.
@@ -88,11 +102,44 @@ public class WeatherProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        throw new RuntimeException("Student, implement the query method!");
+//        throw new RuntimeException("Student, implement the query method!");
 
-//      TODO (9) Handle queries on both the weather and weather with date URI
+//      DONE (9) Handle queries on both the weather and weather with date URI
+        ContentResolver cr = getContext().getContentResolver();
+        Cursor cursor;
+        switch (uriMatcher.match(uri)) {
+            case CODE_WEATHER:
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        WeatherContract.WeatherEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case CODE_WEATHER_WITH_DATE:
+                String normalizedUtcDateString = uri.getLastPathSegment();
+                String[] selectionArguments = new String[]{normalizedUtcDateString};
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        WeatherContract.WeatherEntry.TABLE_NAME,
+                        projection,
+                        WeatherContract.WeatherEntry.COLUMN_DATE + " = ?",
+                        selectionArguments,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
 
-//      TODO (10) Call setNotificationUri on the cursor and then return the cursor
+        cursor.setNotificationUri(cr, uri);
+        return cursor;
+
+
+//      DONE (10) Call setNotificationUri on the cursor and then return the cursor
     }
 
     /**
