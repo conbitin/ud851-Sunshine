@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/humidityLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:layout_marginLeft="36dp"
+            android:text="@string/humidity_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginLeft="60dp"
+            app:layout_constraintLeft_toRightOf="@+id/humidityLabel"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="78" />
+
+        <TextView
+            android:id="@+id/pressureLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/pressure_label"
+            app:layout_constraintLeft_toLeftOf="@+id/humidityLabel"
+            app:layout_constraintTop_toBottomOf="@+id/humidityLabel" />
+
+        <TextView
+            android:id="@+id/pressure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@+id/humidity"
+            app:layout_constraintTop_toTopOf="@+id/pressureLabel"
+            tools:text="998 hPa" />
+
+        <TextView
+            android:id="@+id/windLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/wind_label"
+            app:layout_constraintLeft_toLeftOf="@+id/pressureLabel"
+            app:layout_constraintTop_toBottomOf="@+id/pressureLabel" />
+
+        <TextView
+            android:id="@+id/wind"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="@+id/pressure"
+            app:layout_constraintTop_toTopOf="@+id/windLabel"
+            tools:text="3 km/h" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>
